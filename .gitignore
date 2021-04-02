@@ -21,3 +21,6 @@ $RECYCLE.BIN/
 # =========================
 # Operating System Files
 # =========================
+*.txt
+NGC4337.tsv
+*.tsv
