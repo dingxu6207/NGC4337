@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr  2 11:09:42 2021
+Created on Sat Apr  3 17:02:11 2021
 
 @author: dingxu
 """
@@ -54,69 +54,56 @@ np.savetxt('highdata.txt', highdata)
 np.savetxt('lowdata.txt',  lowdata)
 
 arcmin = 60
-temp = [0 for i in range (arcmin*2)]
-def lendata(datax,RAmean, DECmean):
-    data = np.copy(datax)
-    lendata = len(data)
+
+
+def cdfdata(datamass,RAmean,DECmean):
+    tempcdf = [0 for i in range (arcmin*2)]
+    temp = [0 for i in range (arcmin*2)]
+    datam = np.copy(datamass)
+    lendata = len(datam)
+    print(lendata)
     for i in range(lendata):
-        x = data[i][0]
-        y = data[i][1]
+        x = datam[i][0]
+        y = datam[i][1]
         d = np.sqrt((x-RAmean)**2+(y-DECmean)**2)
         
         for j in np.arange(0,arcmin,0.5):
-            if (d<(j+0.5)/60 and d>=j/60):
+            if (d<(j+0.5)/60):
                 index = np.int(j*2)
                 temp[index] = temp[index]+1
-               
+                
+                
     for i in np.arange(0,arcmin,0.5):
-        s = ((i+0.5))**2*np.pi - (i)**2*np.pi  
         index = np.int(i*2)
-        temp[index] = np.float64(temp[index])/s
-    return temp
-
-
-def func(x,fbg,f0, rc):
-    return fbg+f0/(1+(x/rc)**2)
-
-plt.figure(1)
-plt.scatter(lowdata[:,0], lowdata[:,1], c = 'b', marker='o', s=0.01)
-plt.scatter(highdata[:,0], highdata[:,1], c ='r', marker='o', s=1)
-plt.xlabel('RA',fontsize=14)
-plt.ylabel('DEC',fontsize=14)
-plt.plot(np.mean(highdata[:,0]),np.mean(highdata[:,1]),'o',c='g')
-
-
-
-plt.figure(2)
-plt.hist(lowdata[:,0], bins=500, density = 1, facecolor='blue', alpha=0.5)
-plt.hist(highdata[:,0], bins=10, density = 1, facecolor='red', alpha=0.5)
-
-print('RAmean = ', np.mean(highdata[:,0]))
-print('RAstd = ', np.std(highdata[:,0]))
-
-print('DECmean = ', np.mean(highdata[:,1]))
-print('DECstd = ', np.std(highdata[:,1]))
+        tempcdf[index] = np.float64(temp[index])/lendata
+    
+    return tempcdf
+                
+            
+        
+       
+#highmass <=14.5  mediummass >14.5 and <=17     low-mass>17
+    
+higmass = highdata[highdata[:,5] <= 14.5]
+lowmass = highdata[highdata[:,5] > 17]
+medimmass = highdata[highdata[:,5] > 14.5]
+medimmass = medimmass[medimmass[:,5] <= 17]
 
 RAmean  = np.mean(highdata[:,0])
 DECmean = np.mean(highdata[:,1])
-temp = lendata(data,RAmean, DECmean)
+tempmmass = cdfdata(medimmass, RAmean, DECmean)
+templmass = cdfdata(lowmass, RAmean, DECmean)
+temphmass = cdfdata(higmass, RAmean, DECmean)
 
 plt.figure(3)
 xr = np.arange(0.5,arcmin+0.5,0.5)
 #plt.plot(np.log10(xr), np.log10(temp), '.')
-plt.plot(xr, temp, '.')
+A, = plt.plot(xr, temphmass)
+B, = plt.plot(xr, templmass)
+C, = plt.plot(xr, tempmmass)
 
-popt, pcov = curve_fit(func, xr, temp)
+plt.xlabel('R(arcmin)',fontsize=14)
+plt.ylabel('F',fontsize=14)
+plt.legend(handles=[A,B,C],labels=["high-mass","low-mass","medium-mass"],loc='upper left')
 
 
-print( popt)
-plt.plot(xr, func(xr, *popt), 'r-',
-label='fit: a=%5.3f, b=%5.3f, c=%5.3f' % tuple(popt))
-
-alllist = []
-listxr = xr.tolist()
-alllist.append(listxr)
-alllist.append(temp)
-
-arraylist = np.array(alllist)
-np.savetxt('arraylist.txt', arraylist)

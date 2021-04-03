@@ -63,10 +63,13 @@ plt.xlim((-15,15))
 plt.ylim((-15,15))
 
 plt.figure(10)
-plt.hist(lowdata[:,4], bins=500, density = 1, facecolor='blue', alpha=0.5)
-plt.hist(highdata[:,4], bins=50, density = 1, facecolor='red', alpha=0.5)
+plt.hist(lowdata[:,3], bins=500, density = 1, facecolor='blue', alpha=0.5)
+plt.hist(highdata[:,3], bins=50, density = 1, facecolor='red', alpha=0.5)
+meanlowdata = np.mean(lowdata[:,3])
+meanhighdata = np.mean(highdata[:,3]) 
 
-
+print('meanlowdata=', meanlowdata)
+print('meanhighdata=', meanhighdata)
 
 plt.figure(2)
 hparallax = highdata[:,2]

@@ -81,6 +81,10 @@ pallaxdata = np.vstack((lGmag, lparallax))
 np.savetxt('parallax.txt', pallaxdata)
 plt.xlabel('Gmag',fontsize=14)
 plt.ylabel('parallax',fontsize=14)
+plt.figure(21)
+plt.hist(lowdata[:,2], bins=500, density = 1, facecolor='blue', alpha=0.5)
+plt.hist(highdata[:,2], bins=50, density = 1, facecolor='red', alpha=0.5)
+
 
 plt.figure(3)
 highdataGmag = highdata[:,5]
